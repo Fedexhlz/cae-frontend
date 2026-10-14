@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+/* Tokens de diseño del club: cada variable genera sus propias clases de Tailwind */
+@theme {
+  /* Tipografías: font-display (títulos) y font-sans (texto) */
+  --font-display: 'Barlow Condensed', ui-sans-serif, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Colores: bg-ink, text-ink, border-line, etc. */
+  --color-ink-deep: #080808;
+  --color-ink: #0d0d0d;
+  --color-ink-soft: #151515;
+  --color-ink-light: #222222;
+  --color-paper-soft: #f5f5f5;
+  --color-muted: #8a8a8a;
+  --color-line: #dddddd;
+}
+
+@layer base {
+  /* Desplazamiento suave, solo si el usuario no pidió menos movimiento */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+}
