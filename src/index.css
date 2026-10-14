@@ -14,9 +14,22 @@
   --color-paper-soft: #f5f5f5;
   --color-muted: #8a8a8a;
   --color-line: #dddddd;
+
+  /* Punto de corte propio del menú (1100px): genera la variante nav: */
+  --breakpoint-nav: 68.75rem;
 }
 
 @layer base {
+  :root {
+    /* Altura del navbar fijo (82px) */
+    --navbar-height: 5.125rem;
+  }
+
+  html {
+    /* Evita que el navbar fijo tape la sección a la que se baja */
+    scroll-padding-top: var(--navbar-height);
+  }
+
   /* Desplazamiento suave, solo si el usuario no pidió menos movimiento */
   @media (prefers-reduced-motion: no-preference) {
     html {
