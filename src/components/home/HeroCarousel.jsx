@@ -37,12 +37,12 @@ const HeroCarousel = () => {
       {/* Capa 2: fotos (solo decorativas). En celular van debajo del texto, con fundido hacia arriba */}
       <div
         aria-hidden="true"
-        className="relative order-2 h-80 w-full [mask-image:linear-gradient(to_bottom,transparent_0,#000_40%)] lg:absolute lg:inset-y-0 lg:right-[4%] lg:left-0 lg:h-auto lg:w-auto lg:[mask-image:linear-gradient(to_right,#000_78%,transparent_100%)]"
+        className="relative order-2 h-80 w-full mask-[linear-gradient(to_bottom,transparent_0,#000_40%)] lg:absolute lg:inset-y-0 lg:right-[4%] lg:left-0 lg:h-auto lg:w-auto lg:mask-[linear-gradient(to_right,#000_78%,transparent_100%)]"
       >
         {heroSlides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 bg-cover bg-[position:65%_center] transition-opacity duration-1200 ${
+            className={`absolute inset-0 bg-cover bg-position-[65%_center] transition-opacity duration-1200 ${
               index === currentIndex ? "opacity-100" : "opacity-0"
             }`}
             style={{ backgroundImage: `url(${slide.src}), ${placeholder}` }}

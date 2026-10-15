@@ -5,7 +5,7 @@ const Hero = () => {
   return (
     <section
       id="inicio"
-      className="relative flex flex-col overflow-hidden bg-ink text-white lg:min-h-[680px] lg:flex-row lg:items-center"
+      className="relative flex flex-col overflow-hidden bg-ink text-white lg:min-h-170 lg:flex-row lg:items-center"
     >
       {/* Capa 1: rayas decorativas sobre el fondo negro */}
       <div
@@ -30,7 +30,7 @@ const Hero = () => {
           CLUB ATLÉTICO ESTUDIANTES
         </p>
 
-        <h1 className="font-display text-[length:clamp(60px,14vw,100px)] leading-[0.82] font-bold tracking-[-2px] lg:text-[length:clamp(52px,5.7vw,110px)]">
+        <h1 className="font-display text-[clamp(60px,14vw,100px)] leading-[0.82] font-bold tracking-[-2px] lg:text-[clamp(52px,5.7vw,110px)]">
           PASIÓN.
           <span className="block text-transparent [-webkit-text-stroke:2px_white]">
             DEPORTE.
@@ -38,7 +38,7 @@ const Hero = () => {
           IDENTIDAD.
         </h1>
 
-        <p className="mt-8.75 max-w-[500px] leading-[1.7] text-neutral-300">
+        <p className="mt-8.75 max-w-125 leading-[1.7] text-neutral-300">
           Un club, dos disciplinas y una misma pasión. Formamos parte de la
           historia deportiva de Tucumán.
         </p>

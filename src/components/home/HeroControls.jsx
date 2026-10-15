@@ -26,7 +26,7 @@ const HeroControls = ({
           >
             {/* Barrita: blanca si es la foto actual, tenue si no */}
             <span
-              className={`absolute inset-x-[3px] top-3 h-1 transition-colors ${
+              className={`absolute inset-x-0.75 top-3 h-1 transition-colors ${
                 index === currentIndex
                   ? "bg-white"
                   : "bg-white/40 group-hover:bg-white/75"
