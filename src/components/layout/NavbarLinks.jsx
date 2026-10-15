@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 // Lista de enlaces del menú: se reutiliza en escritorio (fila) y en el menú móvil (columna)
-function NavbarLinks({ links, className, linkClassName, onLinkClick }) {
+const NavbarLinks = ({ links, className, linkClassName, onLinkClick }) => {
   return (
     <ul className={className}>
       {links.map(({ label, to }) => (
@@ -13,6 +13,6 @@ function NavbarLinks({ links, className, linkClassName, onLinkClick }) {
       ))}
     </ul>
   );
-}
+};
 
 export default NavbarLinks;

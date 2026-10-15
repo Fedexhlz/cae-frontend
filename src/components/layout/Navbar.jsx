@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { navLinks } from '../../constants/navLinks.js';
 import NavbarLinks from './NavbarLinks.jsx';
 
-function Navbar() {
+const Navbar = () => {
   // Indica si el menú móvil está abierto; cambia al tocar el botón, un enlace o la tecla Escape
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -73,6 +73,6 @@ function Navbar() {
       )}
     </header>
   );
-}
+};
 
 export default Navbar;

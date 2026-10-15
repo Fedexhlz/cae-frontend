@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 const linkClassName =
   'flex items-center gap-2.5 transition-opacity hover:opacity-50';
 
-function Footer() {
+const Footer = () => {
   return (
     // El id permite que el enlace "Contacto" del navbar baje hasta acá desde cualquier página
     <footer
@@ -67,6 +67,6 @@ function Footer() {
       </address>
     </footer>
   );
-}
+};
 
 export default Footer;

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // No dibuja nada: solo ajusta el scroll cuando cambia la dirección
-function ScrollToHash() {
+const ScrollToHash = () => {
   const { pathname, hash, key } = useLocation();
 
   // Se ejecuta al cargar y en cada navegación: key cambia siempre, incluso si la dirección es la misma
@@ -14,6 +14,6 @@ function ScrollToHash() {
   }, [pathname, hash, key]);
 
   return null;
-}
+};
 
 export default ScrollToHash;

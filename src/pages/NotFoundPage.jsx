@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-function NotFoundPage() {
+const NotFoundPage = () => {
   return (
     <section className='px-[10%] py-24'>
       <p className='text-sm font-bold tracking-widest'>ERROR 404</p>
@@ -18,6 +18,6 @@ function NotFoundPage() {
       </Link>
     </section>
   );
-}
+};
 
 export default NotFoundPage;

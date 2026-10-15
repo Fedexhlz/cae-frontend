@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FaArrowUp } from 'react-icons/fa6';
 
 // Botón flotante para volver arriba: aparece al bajar una pantalla de alto
-function BackToTopButton() {
+const BackToTopButton = () => {
   // Indica si el botón se ve; cambia según cuánto se haya bajado en la página
   const [isVisible, setIsVisible] = useState(false);
 
@@ -31,6 +31,6 @@ function BackToTopButton() {
       <FaArrowUp />
     </button>
   );
-}
+};
 
 export default BackToTopButton;

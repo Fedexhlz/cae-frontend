@@ -4,7 +4,7 @@ import Footer from './Footer.jsx';
 import Navbar from './Navbar.jsx';
 import ScrollToHash from './ScrollToHash.jsx';
 
-function MainLayout() {
+const MainLayout = () => {
   return (
     <>
       <ScrollToHash />
@@ -20,6 +20,6 @@ function MainLayout() {
       <BackToTopButton />
     </>
   );
-}
+};
 
 export default MainLayout;
