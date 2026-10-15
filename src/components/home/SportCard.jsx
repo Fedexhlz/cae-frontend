@@ -1,7 +1,7 @@
 import ArrowLink from '../ui/ArrowLink.jsx';
 import Photo from '../ui/Photo.jsx';
 
-function SportCard({ sport }) {
+const SportCard = ({ sport }) => {
   const { slug, name, description, image } = sport;
 
   return (
@@ -26,6 +26,6 @@ function SportCard({ sport }) {
       </div>
     </article>
   );
-}
+};
 
 export default SportCard;

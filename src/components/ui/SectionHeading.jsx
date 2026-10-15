@@ -1,5 +1,5 @@
 // Etiqueta con raya y título grande de cada sección; isLight es para fondos oscuros
-function SectionHeading({ label, lines, isLight = false }) {
+const SectionHeading = ({ label, lines, isLight = false }) => {
   return (
     <div>
       <div
@@ -19,6 +19,6 @@ function SectionHeading({ label, lines, isLight = false }) {
       </h2>
     </div>
   );
-}
+};
 
 export default SectionHeading;

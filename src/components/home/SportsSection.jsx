@@ -2,7 +2,7 @@ import { sports } from '../../constants/sports.js';
 import SectionHeading from '../ui/SectionHeading.jsx';
 import SportCard from './SportCard.jsx';
 
-function SportsSection() {
+const SportsSection = () => {
   return (
     <section
       id='deportes'
@@ -27,6 +27,6 @@ function SportsSection() {
       </div>
     </section>
   );
-}
+};
 
 export default SportsSection;

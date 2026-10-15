@@ -13,7 +13,7 @@ const smallClasses =
   'group relative grid grid-cols-[34%_1fr] gap-4 border-t border-line py-6 sm:grid-cols-[38%_1fr] sm:gap-5 lg:flex-1 lg:first:border-0 lg:first:pt-0 lg:last:pb-0';
 
 // Tarjeta de noticia: grande si es la destacada, chica si no
-function NewsCard({ news, isFeatured = false }) {
+const NewsCard = ({ news, isFeatured = false }) => {
   const { id, category, tagVariant, date, dateTime, title, excerpt, image } =
     news;
 
@@ -74,6 +74,6 @@ function NewsCard({ news, isFeatured = false }) {
       </div>
     </article>
   );
-}
+};
 
 export default NewsCard;

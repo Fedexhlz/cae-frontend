@@ -1,7 +1,7 @@
 import { trainingSchedule } from '../../constants/schedule.js';
 import SectionHeading from '../ui/SectionHeading.jsx';
 
-function ScheduleSection() {
+const ScheduleSection = () => {
   return (
     <section id='horarios' className='px-[10%] py-20 md:py-30'>
       <SectionHeading
@@ -25,6 +25,6 @@ function ScheduleSection() {
       </div>
     </section>
   );
-}
+};
 
 export default ScheduleSection;

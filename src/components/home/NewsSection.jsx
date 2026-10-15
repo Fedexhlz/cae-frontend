@@ -3,7 +3,7 @@ import ArrowLink from '../ui/ArrowLink.jsx';
 import SectionHeading from '../ui/SectionHeading.jsx';
 import NewsCard from './NewsCard.jsx';
 
-function NewsSection() {
+const NewsSection = () => {
   // La primera noticia es la destacada y las otras tres van en la columna lateral
   const [featured, ...others] = newsItems;
 
@@ -24,6 +24,6 @@ function NewsSection() {
       </div>
     </section>
   );
-}
+};
 
 export default NewsSection;

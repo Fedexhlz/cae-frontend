@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { heroSlides } from '../../constants/heroSlides.js';
+import { placeholder } from '../../constants/placeholder.js';
 import HeroControls from './HeroControls.jsx';
-
-// Fondo de ejemplo que se ve mientras la foto todavía no existe
-const placeholder =
-  'repeating-linear-gradient(135deg, #2c2c2c 0, #2c2c2c 16px, #383838 16px, #383838 32px)';
 
 // Tiempo que dura cada foto, en milisegundos
 const SLIDE_DURATION = 6000;

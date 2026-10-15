@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 // Llamado final a asociarse, antes del footer
-function JoinCta() {
+const JoinCta = () => {
   return (
     <section className='relative flex min-h-112.5 items-center justify-center overflow-hidden bg-ink px-[7%] py-20 text-center text-white'>
       {/* Rayas diagonales decorativas */}
@@ -32,6 +32,6 @@ function JoinCta() {
       </div>
     </section>
   );
-}
+};
 
 export default JoinCta;
