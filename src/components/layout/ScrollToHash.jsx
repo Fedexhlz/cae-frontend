@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // No dibuja nada: solo ajusta el scroll cuando cambia la dirección
-function ScrollToHash() {
+const ScrollToHash = () => {
   const { pathname, hash, key } = useLocation();
 
   // Recuerda la página anterior para saber si se cambió de página o se sigue en la misma
@@ -21,6 +21,6 @@ function ScrollToHash() {
   }, [pathname, hash, key]);
 
   return null;
-}
+};
 
 export default ScrollToHash;

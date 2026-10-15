@@ -2,7 +2,7 @@ import ArrowLink from '../ui/ArrowLink.jsx';
 import SectionHeading from '../ui/SectionHeading.jsx';
 import ClubGallery from './ClubGallery.jsx';
 
-function ClubSection() {
+const ClubSection = () => {
   return (
     <section id='club' className='bg-paper-soft px-[10%] py-20 md:py-30'>
       <div className='grid items-center gap-15 lg:grid-cols-2 lg:gap-25'>
@@ -32,6 +32,6 @@ function ClubSection() {
       </div>
     </section>
   );
-}
+};
 
 export default ClubSection;

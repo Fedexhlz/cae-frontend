@@ -6,7 +6,7 @@ import ScheduleSection from '../components/home/ScheduleSection.jsx';
 import SportsSection from '../components/home/SportsSection.jsx';
 import SummerCampSection from '../components/home/SummerCampSection.jsx';
 
-function HomePage() {
+const HomePage = () => {
   return (
     <>
       <Hero />
@@ -18,6 +18,6 @@ function HomePage() {
       <JoinCta />
     </>
   );
-}
+};
 
 export default HomePage;

@@ -8,7 +8,7 @@ import {
 import Photo from '../ui/Photo.jsx';
 import SectionHeading from '../ui/SectionHeading.jsx';
 
-function SummerCampSection() {
+const SummerCampSection = () => {
   // Cartel de la temporada actual, según el estado definido en constants/summerCamp.js
   const {
     label: statusLabel,
@@ -83,6 +83,6 @@ function SummerCampSection() {
       </div>
     </section>
   );
-}
+};
 
 export default SummerCampSection;

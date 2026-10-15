@@ -9,7 +9,7 @@ const layouts = {
   4: ['', '', '', ''],
 };
 
-function ClubGallery() {
+const ClubGallery = () => {
   const itemClasses = layouts[clubPhotos.length];
 
   return (
@@ -24,6 +24,6 @@ function ClubGallery() {
       ))}
     </div>
   );
-}
+};
 
 export default ClubGallery;

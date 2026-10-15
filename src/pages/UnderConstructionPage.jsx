@@ -2,7 +2,7 @@ import { FaScrewdriverWrench } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 
 // Página provisoria para las rutas que todavía no tienen su vista
-function UnderConstructionPage() {
+const UnderConstructionPage = () => {
   return (
     <section className='px-[10%] py-24'>
       <FaScrewdriverWrench aria-hidden='true' className='text-4xl' />
@@ -21,6 +21,6 @@ function UnderConstructionPage() {
       </Link>
     </section>
   );
-}
+};
 
 export default UnderConstructionPage;
