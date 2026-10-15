@@ -4,15 +4,15 @@ function SectionHeading({ label, lines, isLight = false }) {
     <div>
       <div
         className={`flex items-center gap-3 text-[11px] font-bold tracking-[2px] ${
-          isLight ? "text-white" : ""
+          isLight ? 'text-white' : ''
         }`}
       >
-        <span className={`h-0.75 w-7.5 ${isLight ? "bg-white" : "bg-ink"}`} />
+        <span className={`h-0.75 w-7.5 ${isLight ? 'bg-white' : 'bg-ink'}`} />
         {label}
       </div>
-      <h2 className="mt-6 font-display text-[clamp(55px,6vw,80px)] leading-[0.85] font-bold">
+      <h2 className='mt-6 font-display text-[clamp(55px,6vw,80px)] leading-[0.85] font-bold'>
         {lines.map((line) => (
-          <span key={line} className="block">
+          <span key={line} className='block'>
             {line}
           </span>
         ))}
