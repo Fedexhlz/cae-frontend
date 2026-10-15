@@ -1,11 +1,13 @@
 import Hero from "../components/home/Hero.jsx";
+import NewsSection from "../components/home/NewsSection.jsx";
 
-const HomePage = () => {
+function HomePage() {
   return (
     <>
       <Hero />
+      <NewsSection />
     </>
   );
-};
+}
 
 export default HomePage;
