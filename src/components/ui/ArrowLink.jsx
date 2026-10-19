@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 // Enlace de texto con una flecha que se desplaza al pasar el mouse
-function ArrowLink({ to, children, className = "" }) {
+const ArrowLink = ({ to, children, className = '' }) => {
   return (
     <Link
       to={to}
@@ -9,13 +9,13 @@ function ArrowLink({ to, children, className = "" }) {
     >
       {children}
       <span
-        aria-hidden="true"
-        className="transition-transform group-hover:translate-x-1.5"
+        aria-hidden='true'
+        className='transition-transform group-hover:translate-x-1.5'
       >
         →
       </span>
     </Link>
   );
-}
+};
 
 export default ArrowLink;
