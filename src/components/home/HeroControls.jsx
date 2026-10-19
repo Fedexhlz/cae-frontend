@@ -1,13 +1,13 @@
 import { FaPause, FaPlay } from 'react-icons/fa6';
 
 // Puntos para elegir foto y botón de pausa: todo llega por props desde HeroCarousel
-const HeroControls = ({
+function HeroControls({
   slides,
   currentIndex,
   isPaused,
   onSelect,
   onTogglePause,
-}) => {
+}) {
   return (
     <div
       role='group'
@@ -46,6 +46,6 @@ const HeroControls = ({
       </button>
     </div>
   );
-};
+}
 
 export default HeroControls;

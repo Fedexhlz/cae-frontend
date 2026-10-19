@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 // No dibuja nada: solo ajusta el scroll cuando cambia la dirección
-const ScrollToHash = () => {
+function ScrollToHash() {
   const { pathname, hash, key } = useLocation();
 
   // Recuerda la página anterior para saber si se cambió de página o se sigue en la misma
@@ -17,10 +17,10 @@ const ScrollToHash = () => {
     // si se sigue en la misma página (ej. el logo) y con salto directo si es otra página
     hash
       ? document.getElementById(hash.slice(1))?.scrollIntoView()
-      : window.scrollTo({ top: 0, behavior: isSamePage ? 'auto' : 'instant' });
+      : window.scrollTo({ top: 0, behavior: isSamePage ? "auto" : "instant" });
   }, [pathname, hash, key]);
 
   return null;
-};
+}
 
 export default ScrollToHash;

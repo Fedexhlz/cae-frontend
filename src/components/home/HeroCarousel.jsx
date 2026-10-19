@@ -6,7 +6,7 @@ import HeroControls from './HeroControls.jsx';
 // Tiempo que dura cada foto, en milisegundos
 const SLIDE_DURATION = 6000;
 
-const HeroCarousel = () => {
+function HeroCarousel() {
   // Posición de la foto que se muestra; cambia con el temporizador o al tocar un punto
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -56,6 +56,6 @@ const HeroCarousel = () => {
       />
     </>
   );
-};
+}
 
 export default HeroCarousel;

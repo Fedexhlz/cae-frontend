@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import HeroCarousel from './HeroCarousel.jsx';
 
-const Hero = () => {
+function Hero() {
   return (
     <section
       id='inicio'
@@ -76,6 +76,6 @@ const Hero = () => {
       </div>
     </section>
   );
-};
+}
 
 export default Hero;
