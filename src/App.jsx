@@ -1,19 +1,35 @@
+
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout.jsx";
+import { underConstructionPaths } from "./constants/underConstructionPaths.js";
 import HomePage from "./pages/HomePage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import SportPage from "./pages/SportPage.jsx";
+import AreaDeSocios from "./pages/AreaDeSocios.jsx";
+import UnderConstructionPage from "./pages/UnderConstructionPage.jsx";
 
 function App() {
   return (
     <Routes>
       {/* Las rutas anidadas comparten el marco MainLayout */}
       <Route element={<MainLayout />}>
+        {/* Página principal */}
         <Route path="/" element={<HomePage />} />
 
-        <Route path="/" element={<HomePage />} />
+        {/* Páginas de deportes */}
         <Route path="/deportes/:slug" element={<SportPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+
+        {/* Área de socios */}
+        <Route path="/ingresar" element={<AreaDeSocios />} />
+
+        {/* Rutas pendientes: todas muestran la página en construcción */}
+        {underConstructionPaths.map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={<UnderConstructionPage />}
+          />
+        ))}
 
         {/* Cualquier otra dirección: error 404 */}
         <Route path="*" element={<NotFoundPage />} />
