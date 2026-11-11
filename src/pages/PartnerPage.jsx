@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import FeeState from "../components/ui/FeeState.jsx";import SectionHeading from "../components/ui/SectionHeading.jsx";
+import FeeStatus from "../components/ui/FeeStatus.jsx";
+import SectionHeading from "../components/ui/SectionHeading.jsx";
 import { ESTADOS_CUOTA } from "../constants/cuotas.js";
 import { sports } from "../constants/sports.js";
 import { getPerfil } from "../services/server.js";
@@ -61,6 +62,9 @@ function PartnerPage() {
   if (!socio) {
     return <Navigate to="/ingresar" replace />;
   }
+  if (socio.rol === "admin") {
+    return <Navigate to="/admin" replace />;
+  }
 
   // Deportes en los que está inscripto (el slug coincide con perfiles.deportes)
   const deportesDelSocio = sports.filter((sport) =>
@@ -74,7 +78,11 @@ function PartnerPage() {
       .flatMap((sport) =>
         sport.schedule
           .filter((item) => item.day.toUpperCase() === dia)
-          .map((item) => ({ ...item, sportName: sport.name, slug: sport.slug })),
+          .map((item) => ({
+            ...item,
+            sportName: sport.name,
+            slug: sport.slug,
+          })),
       )
       .sort((a, b) => a.time.localeCompare(b.time)),
   }));
@@ -138,7 +146,7 @@ function PartnerPage() {
                   Estado de cuotas
                 </p>
                 <div className="mt-4">
-                  <FeeState estado={perfil.estado_cuotas} />
+                  <FeeStatus estado={perfil.estado_cuotas} />
                 </div>
                 <p className="mt-4 text-muted">
                   {ESTADOS_CUOTA[perfil.estado_cuotas]?.mensaje ??

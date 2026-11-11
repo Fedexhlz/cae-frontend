@@ -2,22 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import SectionHeading from "../components/ui/SectionHeading.jsx";
 import { getSocios } from "../services/server.js";
-
-// Clave = valor guardado en la base. Ajustá acá si tus valores son otros
-const ESTADOS_CUOTA = {
-  al_dia: {
-    label: "Al día",
-    className: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  },
-  pendiente: {
-    label: "Pendiente",
-    className: "bg-amber-50 text-amber-700 ring-amber-200",
-  },
-  vencida: {
-    label: "Vencida",
-    className: "bg-red-50 text-red-700 ring-red-200",
-  },
-};
+import FeeStatus from "../components/ui/FeeStatus.jsx";
+import { ESTADOS_CUOTA } from "../constants/cuotas.js";
+import { Navigate } from "react-router-dom";
+import { useAuthStore } from "../stores/useAuthStore.js";
 
 const DEPORTES = {
   basquet: "Básquet",
@@ -35,21 +23,6 @@ const normalizar = (texto) =>
 const listaDeportes = (socio) =>
   Array.isArray(socio.deportes) ? socio.deportes : [];
 
-function EstadoCuota({ estado }) {
-  const config = ESTADOS_CUOTA[estado] ?? {
-    label: estado ?? "Sin datos",
-    className: "bg-paper-soft text-muted ring-line",
-  };
-
-  return (
-    <span
-      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${config.className}`}
-    >
-      {config.label}
-    </span>
-  );
-}
-
 function DeporteChip({ deporte }) {
   return (
     <span className="inline-block border border-line px-2.5 py-1 text-[11px] font-bold tracking-[1px] uppercase">
@@ -59,6 +32,9 @@ function DeporteChip({ deporte }) {
 }
 
 function AdminPage() {
+  const sesion = useAuthStore((state) => state.socio);
+  const cerrarSesion = useAuthStore((state) => state.cerrarSesion);
+  const esAdmin = sesion?.rol === "admin";
   const [socios, setSocios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -70,7 +46,7 @@ function AdminPage() {
   const [filtroDeporte, setFiltroDeporte] = useState("todos");
 
   useEffect(() => {
-    // Si el componente se desmonta antes de que llegue la respuesta, la ignoramos
+    if (!esAdmin) return;
     let cancelado = false;
 
     getSocios()
@@ -87,7 +63,7 @@ function AdminPage() {
     return () => {
       cancelado = true;
     };
-  }, [intento]);
+  }, [intento, esAdmin]);
 
   const reintentar = () => {
     setLoading(true);
@@ -113,13 +89,25 @@ function AdminPage() {
     });
   }, [socios, busqueda, filtroCuota, filtroDeporte]);
 
+  if (!sesion) return <Navigate to="/ingresar" replace />;
+  if (!esAdmin) return <Navigate to="/socio" replace />;
+
   const inputClassName =
     "border border-line bg-white px-3 py-2.5 text-sm outline-none focus:border-ink";
 
   return (
     <section className="px-[6%] py-24">
       <div className="mx-auto max-w-6xl">
-        <SectionHeading label="ADMINISTRACIÓN" lines={["SOCIOS"]} />
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <SectionHeading label="ADMINISTRACIÓN" lines={["SOCIOS"]} />
+          <button
+            type="button"
+            onClick={cerrarSesion}
+            className="border border-ink px-5 py-3 text-xs font-bold uppercase transition-colors hover:bg-ink hover:text-white"
+          >
+            Cerrar sesión
+          </button>
+        </div>
 
         {/* Herramientas de lectura: buscador y filtros */}
         <div className="mt-12 flex flex-col gap-4 md:flex-row md:items-center">
@@ -219,7 +207,7 @@ function AdminPage() {
               <tbody>
                 {visibles.map((socio) => (
                   <tr
-                    key={socio.id}
+                    key={socio.socio_id}
                     className="border-t border-line transition-colors hover:bg-paper-soft"
                   >
                     <td className="px-6 py-4 font-semibold">{socio.nombre}</td>
@@ -227,7 +215,7 @@ function AdminPage() {
                       {socio.documento}
                     </td>
                     <td className="px-6 py-4">
-                      <EstadoCuota estado={socio.estado_cuotas} />
+                      <FeeStatus estado={socio.estado_cuotas} />
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-2">

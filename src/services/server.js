@@ -32,9 +32,9 @@ export const getNoticias = async () => {
 };
 
 export const getSocios = async () => {
-  const { data } = await api.get("/socios", {
+  const { data } = await api.get("/perfiles", {
     params: {
-      select: "id,nombre,documento,estado_cuotas,deportes",
+      select: "socio_id,nombre,documento,estado_cuotas,deportes",
       order: "nombre.asc",
     },
   });

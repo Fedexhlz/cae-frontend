@@ -44,7 +44,7 @@ function AreaDeSocios() {
     }
   };
   if (socioActual) {
-    return <Navigate to="/socio" replace />;
+    return <Navigate to={socioActual.rol === "admin" ? "/admin" : "/socio"} replace />;
   }
 
   return (
