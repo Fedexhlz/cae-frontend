@@ -2,11 +2,15 @@ import { useState } from "react";
 import SectionHeading from "../components/ui/SectionHeading.jsx";
 import Swal from "sweetalert2";
 import { loginSocio } from "../services/server.js";
+import { Navigate } from "react-router-dom";
+import { useAuthStore } from "../stores/useAuthStore.js";
 
 function AreaDeSocios() {
   // Cada campo guarda su valor en un estado (input controlado)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const socioActual = useAuthStore((state) => state.socio);
+  const iniciarSesion = useAuthStore((state) => state.iniciarSesion);
   // Mientras esperamos la respuesta de Supabase, se desactiva el botón
   const [loading, setLoading] = useState(false);
 
@@ -19,31 +23,29 @@ function AreaDeSocios() {
       const socio = await loginSocio(email, password);
 
       if (socio) {
-        Swal.fire({
-          icon: "success",
-          title: "¡Bienvenido!",
-          text: socio.email,
-        });
+        iniciarSesion(socio);
       } else {
-        // La petición funcionó, pero no hay un socio con esos datos
         Swal.fire({
           icon: "error",
           title: "Datos incorrectos",
           text: "El email o la contraseña no coinciden.",
         });
       }
-    } catch {
-      // La petición en sí falló (red, URL o clave mal configuradas)
+    } catch (error) {
+      console.error("Error en el login:", error);
+
       Swal.fire({
         icon: "error",
         title: "No pudimos conectar",
         text: "Probá de nuevo en unos minutos.",
       });
     } finally {
-      // Se reactiva el botón tanto si salió bien como si falló
       setLoading(false);
     }
   };
+  if (socioActual) {
+    return <Navigate to="/socio" replace />;
+  }
 
   return (
     <section className="px-[10%] py-24">

@@ -1,4 +1,3 @@
-
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import { underConstructionPaths } from "./constants/underConstructionPaths.js";
@@ -7,6 +6,8 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import SportPage from "./pages/SportPage.jsx";
 import AreaDeSocios from "./pages/AreaDeSocios.jsx";
 import UnderConstructionPage from "./pages/UnderConstructionPage.jsx";
+import AdminPage from "./pages/AdminPage.jsx";
+import PartnerPage from "./pages/PartnerPage.jsx";
 
 function App() {
   return (
@@ -22,13 +23,14 @@ function App() {
         {/* Área de socios */}
         <Route path="/ingresar" element={<AreaDeSocios />} />
 
+        <Route path="/socio" element={<PartnerPage />} />
+
+        {/* Área de administrador */}
+        <Route path="/admin" element={<AdminPage />} />
+
         {/* Rutas pendientes: todas muestran la página en construcción */}
         {underConstructionPaths.map((path) => (
-          <Route
-            key={path}
-            path={path}
-            element={<UnderConstructionPage />}
-          />
+          <Route key={path} path={path} element={<UnderConstructionPage />} />
         ))}
 
         {/* Cualquier otra dirección: error 404 */}

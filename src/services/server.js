@@ -15,13 +15,12 @@ const api = axios.create({
 export const loginSocio = async (email, password) => {
   const { data } = await api.get("/socios", {
     params: {
-      select: "id,email",
+      select: "id,email,rol",
       email: `eq.${email}`,
       password: `eq.${password}`,
     },
   });
 
-  // data es una lista: con una fila los datos coinciden, vacía significa que no
   return data.length > 0 ? data[0] : null;
 };
 
@@ -30,4 +29,25 @@ export const getNoticias = async () => {
     params: { select: "*", order: "date.desc" },
   });
   return data;
+};
+
+export const getSocios = async () => {
+  const { data } = await api.get("/socios", {
+    params: {
+      select: "id,nombre,documento,estado_cuotas,deportes",
+      order: "nombre.asc",
+    },
+  });
+  return data;
+};
+
+export const getPerfil = async (socioId) => {
+  const { data } = await api.get("/perfiles", {
+    params: {
+      select: "socio_id,nombre,documento,estado_cuotas,deportes",
+      socio_id: `eq.${socioId}`,
+    },
+  });
+  // data es una lista: con una fila está el perfil, vacía significa que no tiene
+  return data.length > 0 ? data[0] : null;
 };
