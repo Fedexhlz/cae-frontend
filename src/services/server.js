@@ -1,7 +1,11 @@
 import axios from "axios";
+import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+
+console.log("URL:", SUPABASE_URL);
+console.log("KEY:", SUPABASE_KEY ? "hay clave" : "VACÍA");
 
 // Cliente preconfigurado: todas las peticiones llevan la dirección base y la clave
 const api = axios.create({
@@ -12,16 +16,38 @@ const api = axios.create({
   },
 });
 
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 export const loginSocio = async (email, password) => {
-  const { data } = await api.get("/socios", {
-    params: {
-      select: "id,email,rol",
-      email: `eq.${email}`,
-      password: `eq.${password}`,
-    },
+  // 1. Supabase Auth verifica el email y la contraseña
+  const { data: auth, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
   });
 
-  return data.length > 0 ? data[0] : null;
+  if (error) {
+    // Datos incorrectos: se devuelve null, como antes
+    if (error.code === "invalid_credentials") return null;
+    // Cualquier otro error (red, servidor) lo maneja el catch de la página
+    throw error;
+  }
+
+  // 2. Buscamos la fila de socios vinculada a ese usuario
+  const { data: socio, error: errorSocio } = await supabase
+    .from("socios")
+    .select("id,email,rol")
+    .eq("auth_id", auth.user.id)
+    .maybeSingle();
+
+  if (errorSocio) throw errorSocio;
+
+  // 3. Existe en Auth pero no está vinculado a un socio: no lo dejamos pasar
+  if (!socio) {
+    await supabase.auth.signOut();
+    return null;
+  }
+
+  return socio;
 };
 
 export const getNoticias = async () => {
