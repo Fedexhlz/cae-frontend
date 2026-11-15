@@ -4,9 +4,6 @@ import { createClient } from "@supabase/supabase-js";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 
-console.log("URL:", SUPABASE_URL);
-console.log("KEY:", SUPABASE_KEY ? "hay clave" : "VACÍA");
-
 // Cliente preconfigurado: todas las peticiones llevan la dirección base y la clave
 const api = axios.create({
   baseURL: `${SUPABASE_URL}/rest/v1`,
@@ -58,22 +55,23 @@ export const getNoticias = async () => {
 };
 
 export const getSocios = async () => {
-  const { data } = await api.get("/perfiles", {
-    params: {
-      select: "socio_id,nombre,documento,estado_cuotas,deportes",
-      order: "nombre.asc",
-    },
-  });
+  const { data, error } = await supabase
+    .from("perfiles")
+    .select("socio_id,nombre,documento,estado_cuotas,deportes")
+    .order("nombre", { ascending: true });
+
+  if (error) throw error;
   return data;
 };
 
 export const getPerfil = async (socioId) => {
-  const { data } = await api.get("/perfiles", {
-    params: {
-      select: "socio_id,nombre,documento,estado_cuotas,deportes",
-      socio_id: `eq.${socioId}`,
-    },
-  });
-  // data es una lista: con una fila está el perfil, vacía significa que no tiene
-  return data.length > 0 ? data[0] : null;
+  const { data, error } = await supabase
+    .from("perfiles")
+    .select("socio_id,nombre,documento,estado_cuotas,deportes")
+    .eq("socio_id", socioId)
+    .maybeSingle();
+
+  if (error) throw error;
+  // maybeSingle devuelve la fila, o null si el socio no tiene perfil
+  return data;
 };
