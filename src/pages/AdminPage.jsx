@@ -43,6 +43,18 @@ const datosDeEdad = (socio) => {
   return { edad: edadActual(socio.fecha_nacimiento), categorias };
 };
 
+const textoBuscable = (socio) =>
+  normalizar(
+    [
+      socio.nombre,
+      socio.documento,
+      ESTADOS_CUOTA[socio.estado_cuotas]?.label,
+      socio.edad !== null ? `${socio.edad} años` : "",
+      ...listaDeportes(socio).map((d) => DEPORTES[normalizar(d)] ?? d),
+      ...socio.categorias.flatMap(({ categoria }) => categoria ?? []),
+    ].join(" "),
+  );
+
 function DeporteChip({ deporte }) {
   return (
     <span className="inline-block border border-line px-2.5 py-1 text-[11px] font-bold tracking-[1px] uppercase">
@@ -104,9 +116,7 @@ function AdminPage() {
     const texto = normalizar(busqueda);
 
     return socios.filter((socio) => {
-      const coincideTexto =
-        normalizar(socio.nombre).includes(texto) ||
-        normalizar(socio.documento).includes(texto);
+      const coincideTexto = textoBuscable(socio).includes(texto);
       const coincideCuota =
         filtroCuota === "todas" || socio.estado_cuotas === filtroCuota;
       const coincideDeporte =
@@ -148,8 +158,8 @@ function AdminPage() {
               type="search"
               value={busqueda}
               onChange={(event) => setBusqueda(event.target.value)}
-              placeholder="Buscar por nombre o documento"
-              aria-label="Buscar socio por nombre o documento"
+              placeholder="Buscar por nombre, documento, categoría, edad..."
+              aria-label="Buscar socio por nombre, documento, deporte, categoría, estado de cuota o edad"
               className={`${inputClassName} w-full pl-11`}
             />
           </div>
