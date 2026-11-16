@@ -15,11 +15,16 @@ function SportPage() {
   if (!sport) {
     return <NotFoundPage />;
   }
-
+  const idsConHorario = sport.schedule.flatMap(
+    (item) => item.categoryIds ?? [],
+  );
+  const categoriasConHorario = sport.categories.filter((cat) =>
+    idsConHorario.includes(cat.id),
+  );
   return (
     <>
       <SportHero sport={sport} />
-      <CategoriesSection categories={sport.categories} />
+      <CategoriesSection categories={categoriasConHorario} />
       <ScheduleSection schedule={sport.schedule} />
       <CoachesSection coaches={sport.coaches} />
     </>
