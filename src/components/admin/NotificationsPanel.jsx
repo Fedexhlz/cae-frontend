@@ -6,7 +6,7 @@ const COLORES = {
   por_vencer: "border-l-emerald-400",
 };
 
-function NotificationsPanel({ notificaciones }) {
+function NotificationsPanel({ notificaciones, onRegistrarPago, guardandoId }) {
   return (
     <aside aria-label="Notificaciones de cuotas" className="border border-line">
       <h2 className="border-b border-line bg-paper-soft px-5 py-4 text-[11px] font-bold tracking-[2px] uppercase">
@@ -30,6 +30,16 @@ function NotificationsPanel({ notificaciones }) {
             >
               <p className="font-semibold">{aviso.nombre}</p>
               <p className="mt-1 text-sm text-muted">{aviso.mensaje}</p>
+              <button
+                type="button"
+                onClick={() => onRegistrarPago(aviso)}
+                disabled={guardandoId === aviso.socioId}
+                className="mt-3 border border-ink px-3 py-1.5 text-[11px] font-bold uppercase transition-colors hover:bg-ink hover:text-white disabled:opacity-60"
+              >
+                {guardandoId === aviso.socioId
+                  ? "Guardando..."
+                  : "Registrar pago"}
+              </button>
             </li>
           ))}
         </ul>
