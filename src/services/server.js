@@ -75,3 +75,16 @@ export const getPerfil = async (socioId) => {
   // maybeSingle devuelve la fila, o null si el socio no tiene perfil
   return data;
 };
+
+export const registrarPago = async (socioId, fechaUltimoPago) => {
+  const { data, error } = await supabase
+    .from("perfiles")
+    .update({ fecha_ultimo_pago: fechaUltimoPago })
+    .eq("socio_id", socioId)
+    .select("socio_id,fecha_ultimo_pago");
+
+  if (error) throw error;
+  // Si la política no deja escribir, Supabase no da error: devuelve 0 filas
+  if (data.length === 0) throw new Error("No se pudo registrar el pago");
+  return data[0];
+};
