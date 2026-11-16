@@ -6,6 +6,7 @@ import { ESTADOS_CUOTA } from "../constants/cuotas.js";
 import { sports } from "../constants/sports.js";
 import { getPerfil } from "../services/server.js";
 import { useAuthStore } from "../stores/useAuthStore.js";
+import { estadoCuota } from "../utils/fees.js";
 
 const DIAS = [
   "LUNES",
@@ -38,7 +39,13 @@ function PartnerPage() {
 
     getPerfil(socioId)
       .then((data) => {
-        if (!cancelado) setPerfil(data);
+        if (!cancelado) {
+          setPerfil(
+            data
+              ? { ...data, estado_cuotas: estadoCuota(data.fecha_ultimo_pago) }
+              : null,
+          );
+        }
       })
       .catch(() => {
         if (!cancelado) setError(true);
