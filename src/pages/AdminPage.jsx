@@ -7,6 +7,8 @@ import { ESTADOS_CUOTA } from "../constants/cuotas.js";
 import { Navigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore.js";
 import { estadoCuota } from "../utils/fees.js";
+import { edadActual, edadEnElAnio, categoriaPorEdad } from "../utils/age.js";
+import { sports } from "../constants/sports.js";
 
 const DEPORTES = {
   basquet: "Básquet",
@@ -23,6 +25,23 @@ const normalizar = (texto) =>
 // Si el socio no tiene deportes cargados, devolvemos una lista vacía
 const listaDeportes = (socio) =>
   Array.isArray(socio.deportes) ? socio.deportes : [];
+
+// Edad real y categoría de cada deporte del socio (sin fecha de nacimiento no se puede calcular)
+const datosDeEdad = (socio) => {
+  if (!socio.fecha_nacimiento) return { edad: null, categorias: [] };
+
+  const edadAnio = edadEnElAnio(socio.fecha_nacimiento);
+  const categorias = listaDeportes(socio).map((deporte) => {
+    const sport = sports.find((item) => item.slug === normalizar(deporte));
+    const categoria = sport ? categoriaPorEdad(sport, edadAnio) : null;
+    return {
+      deporte: DEPORTES[normalizar(deporte)] ?? deporte,
+      categoria: categoria?.name ?? null,
+    };
+  });
+
+  return { edad: edadActual(socio.fecha_nacimiento), categorias };
+};
 
 function DeporteChip({ deporte }) {
   return (
@@ -57,6 +76,7 @@ function AdminPage() {
             data.map((socio) => ({
               ...socio,
               estado_cuotas: estadoCuota(socio.fecha_ultimo_pago),
+              ...datosDeEdad(socio),
             })),
           );
         }
@@ -197,11 +217,17 @@ function AdminPage() {
           )}
 
           {!loading && !error && visibles.length > 0 && (
-            <table className="w-full min-w-175 border-collapse text-left">
+            <table className="w-full min-w-225 border-collapse text-left">
               <caption className="sr-only">Listado de socios del club</caption>
               <thead className="bg-paper-soft">
                 <tr>
-                  {["Nombre", "Documento", "Cuotas", "Deportes"].map((col) => (
+                  {[
+                    "Nombre",
+                    "Documento",
+                    "Cuotas",
+                    "Deportes",
+                    "Edad y categoría",
+                  ].map((col) => (
                     <th
                       key={col}
                       scope="col"
@@ -235,6 +261,22 @@ function AdminPage() {
                           <span className="text-muted">—</span>
                         )}
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {socio.edad === null ? (
+                        <span className="text-muted">—</span>
+                      ) : (
+                        <>
+                          <span className="font-semibold tabular-nums">
+                            {socio.edad} años
+                          </span>
+                          {socio.categorias.map(({ deporte, categoria }) => (
+                            <p key={deporte} className="text-sm text-muted">
+                              {deporte}: {categoria ?? "Sin categoría"}
+                            </p>
+                          ))}
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
