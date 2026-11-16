@@ -13,3 +13,13 @@ export function categoriaPorEdad(sport, edad) {
     ) ?? null
   );
 }
+
+// Edad real en años cumplidos hoy, a partir de una fecha "AAAA-MM-DD"
+export function edadActual(fechaNacimiento, hoy = new Date()) {
+  const [anio, mes, dia] = fechaNacimiento.split("-").map(Number);
+  let edad = hoy.getFullYear() - anio;
+  const mesHoy = hoy.getMonth() + 1;
+  const todaviaNoCumplio = mesHoy < mes || (mesHoy === mes && hoy.getDate() < dia);
+  if (todaviaNoCumplio) edad -= 1;
+  return edad;
+}
