@@ -9,6 +9,8 @@ import { useAuthStore } from "../stores/useAuthStore.js";
 import { estadoCuota } from "../utils/fees.js";
 import { edadActual, edadEnElAnio, categoriaPorEdad } from "../utils/age.js";
 import { sports } from "../constants/sports.js";
+import NotificationsPanel from "../components/admin/NotificationsPanel.jsx";
+import { armarNotificaciones } from "../utils/notifications.js";
 
 const DEPORTES = {
   basquet: "Básquet",
@@ -43,6 +45,7 @@ const datosDeEdad = (socio) => {
   return { edad: edadActual(socio.fecha_nacimiento), categorias };
 };
 
+// Junta en un solo texto todo lo que se puede buscar de un socio
 const textoBuscable = (socio) =>
   normalizar(
     [
@@ -127,6 +130,9 @@ function AdminPage() {
     });
   }, [socios, busqueda, filtroCuota, filtroDeporte]);
 
+  // Avisos de todo el club: no dependen del buscador ni de los filtros
+  const notificaciones = useMemo(() => armarNotificaciones(socios), [socios]);
+
   if (!sesion) return <Navigate to="/ingresar" replace />;
   if (!esAdmin) return <Navigate to="/socio" replace />;
 
@@ -200,99 +206,108 @@ function AdminPage() {
           </p>
         )}
 
-        <div className="mt-4 overflow-x-auto border border-line">
-          {loading && (
-            <p className="px-6 py-16 text-center text-muted">
-              Cargando socios...
-            </p>
-          )}
+        {/* Grilla: tabla a la izquierda y panel de avisos a la derecha (apilados en celular) */}
+        <div className="mt-4 grid items-start gap-6 lg:grid-cols-[1fr_20rem]">
+          <div className="overflow-x-auto border border-line">
+            {loading && (
+              <p className="px-6 py-16 text-center text-muted">
+                Cargando socios...
+              </p>
+            )}
 
-          {error && (
-            <div className="px-6 py-16 text-center">
-              <p className="font-semibold">No pudimos cargar los socios.</p>
-              <button
-                type="button"
-                onClick={reintentar}
-                className="mt-4 bg-ink px-6 py-3 text-sm font-bold text-white uppercase hover:bg-ink-light"
-              >
-                Reintentar
-              </button>
-            </div>
-          )}
+            {error && (
+              <div className="px-6 py-16 text-center">
+                <p className="font-semibold">No pudimos cargar los socios.</p>
+                <button
+                  type="button"
+                  onClick={reintentar}
+                  className="mt-4 bg-ink px-6 py-3 text-sm font-bold text-white uppercase hover:bg-ink-light"
+                >
+                  Reintentar
+                </button>
+              </div>
+            )}
 
-          {!loading && !error && visibles.length === 0 && (
-            <p className="px-6 py-16 text-center text-muted">
-              No hay socios que coincidan con la búsqueda.
-            </p>
-          )}
+            {!loading && !error && visibles.length === 0 && (
+              <p className="px-6 py-16 text-center text-muted">
+                No hay socios que coincidan con la búsqueda.
+              </p>
+            )}
 
-          {!loading && !error && visibles.length > 0 && (
-            <table className="w-full min-w-225 border-collapse text-left">
-              <caption className="sr-only">Listado de socios del club</caption>
-              <thead className="bg-paper-soft">
-                <tr>
-                  {[
-                    "Nombre",
-                    "Documento",
-                    "Cuotas",
-                    "Deportes",
-                    "Edad y categoría",
-                  ].map((col) => (
-                    <th
-                      key={col}
-                      scope="col"
-                      className="px-6 py-4 text-[11px] font-bold tracking-[2px] uppercase"
-                    >
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {visibles.map((socio) => (
-                  <tr
-                    key={socio.socio_id}
-                    className="border-t border-line transition-colors hover:bg-paper-soft"
-                  >
-                    <td className="px-6 py-4 font-semibold">{socio.nombre}</td>
-                    <td className="px-6 py-4 text-muted tabular-nums">
-                      {socio.documento}
-                    </td>
-                    <td className="px-6 py-4">
-                      <FeeStatus estado={socio.estado_cuotas} />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        {listaDeportes(socio).length > 0 ? (
-                          listaDeportes(socio).map((deporte) => (
-                            <DeporteChip key={deporte} deporte={deporte} />
-                          ))
-                        ) : (
-                          <span className="text-muted">—</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {socio.edad === null ? (
-                        <span className="text-muted">—</span>
-                      ) : (
-                        <>
-                          <span className="font-semibold tabular-nums">
-                            {socio.edad} años
-                          </span>
-                          {socio.categorias.map(({ deporte, categoria }) => (
-                            <p key={deporte} className="text-sm text-muted">
-                              {deporte}: {categoria ?? "Sin categoría"}
-                            </p>
-                          ))}
-                        </>
-                      )}
-                    </td>
+            {!loading && !error && visibles.length > 0 && (
+              <table className="w-full min-w-225 border-collapse text-left">
+                <caption className="sr-only">
+                  Listado de socios del club
+                </caption>
+                <thead className="bg-paper-soft">
+                  <tr>
+                    {[
+                      "Nombre",
+                      "Documento",
+                      "Cuotas",
+                      "Deportes",
+                      "Edad y categoría",
+                    ].map((col) => (
+                      <th
+                        key={col}
+                        scope="col"
+                        className="px-6 py-4 text-[11px] font-bold tracking-[2px] uppercase"
+                      >
+                        {col}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {visibles.map((socio) => (
+                    <tr
+                      key={socio.socio_id}
+                      className="border-t border-line transition-colors hover:bg-paper-soft"
+                    >
+                      <td className="px-6 py-4 font-semibold">
+                        {socio.nombre}
+                      </td>
+                      <td className="px-6 py-4 text-muted tabular-nums">
+                        {socio.documento}
+                      </td>
+                      <td className="px-6 py-4">
+                        <FeeStatus estado={socio.estado_cuotas} />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-2">
+                          {listaDeportes(socio).length > 0 ? (
+                            listaDeportes(socio).map((deporte) => (
+                              <DeporteChip key={deporte} deporte={deporte} />
+                            ))
+                          ) : (
+                            <span className="text-muted">—</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {socio.edad === null ? (
+                          <span className="text-muted">—</span>
+                        ) : (
+                          <>
+                            <span className="font-semibold tabular-nums">
+                              {socio.edad} años
+                            </span>
+                            {socio.categorias.map(({ deporte, categoria }) => (
+                              <p key={deporte} className="text-sm text-muted">
+                                {deporte}: {categoria ?? "Sin categoría"}
+                              </p>
+                            ))}
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <NotificationsPanel notificaciones={notificaciones} />
         </div>
       </div>
     </section>
