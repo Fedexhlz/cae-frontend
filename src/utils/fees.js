@@ -14,12 +14,33 @@ export function diasDesdePago(fechaUltimoPago, hoy = new Date()) {
   return Math.round((hoyMedianoche - pago) / MS_POR_DIA);
 }
 
-// Estado de la cuota según los días desde el último pago
+// Estado de la cuota según los meses adeudados
 export function estadoCuota(fechaUltimoPago, hoy = new Date()) {
-  const dias = diasDesdePago(fechaUltimoPago, hoy);
-  if (dias === null) return "pendiente";
-  if (dias <= 30) return "al_dia";
-  if (dias <= 60) return "pendiente";
-  if (dias <= 90) return "vencida";
+  const meses = mesesAdeudados(fechaUltimoPago, hoy);
+  if (meses === null) return "pendiente";
+  if (meses === 0) return "al_dia";
+  if (meses === 1) return "pendiente";
+  if (meses === 2) return "vencida";
   return "inactivo";
+}
+
+export function mesesAdeudados(fechaUltimoPago, hoy = new Date()) {
+  if (!fechaUltimoPago) return null;
+  const [anio, mes, dia] = fechaUltimoPago.split("-").map(Number);
+
+  let meses =
+    (hoy.getFullYear() - anio) * 12 + (hoy.getMonth() + 1 - mes);
+
+  // Último día del mes actual (el día 0 del mes siguiente es el último de este)
+  const ultimoDiaDelMes = new Date(
+    hoy.getFullYear(),
+    hoy.getMonth() + 1,
+    0,
+  ).getDate();
+
+  // Si pagó el 31 y el mes tiene 28 días, el mes se cumple el 28
+  const diaDeVencimiento = Math.min(dia, ultimoDiaDelMes);
+  if (hoy.getDate() < diaDeVencimiento) meses -= 1;
+
+  return meses;
 }
