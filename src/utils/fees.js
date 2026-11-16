@@ -66,3 +66,16 @@ export function proximoVencimiento(fechaUltimoPago, hoy = new Date()) {
     Math.min(dia, ultimoDia),
   );
 }
+
+// Suma un mes calendario a una fecha "AAAA-MM-DD" y devuelve otra "AAAA-MM-DD".
+// Si el día no existe en el mes siguiente (31 de enero), cae en el último día (28 de febrero).
+export function sumarUnMes(fecha) {
+  const [anio, mes, dia] = fecha.split("-").map(Number);
+  const ultimoDia = new Date(anio, mes + 1, 0).getDate();
+  const nuevoDia = Math.min(dia, ultimoDia);
+  const resultado = new Date(anio, mes, nuevoDia);
+
+  const dd = String(resultado.getDate()).padStart(2, "0");
+  const mm = String(resultado.getMonth() + 1).padStart(2, "0");
+  return `${resultado.getFullYear()}-${mm}-${dd}`;
+}
