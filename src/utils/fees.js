@@ -44,3 +44,25 @@ export function mesesAdeudados(fechaUltimoPago, hoy = new Date()) {
 
   return meses;
 }
+
+// Fecha en que se cumple el próximo mes desde el último pago (null si no hay fecha)
+export function proximoVencimiento(fechaUltimoPago, hoy = new Date()) {
+  const meses = mesesAdeudados(fechaUltimoPago, hoy);
+  if (meses === null) return null;
+  const [anio, mes, dia] = fechaUltimoPago.split("-").map(Number);
+
+  // Mes en el que cae el próximo vencimiento (meses cumplidos + 1)
+  const destino = new Date(anio, mes - 1 + meses + 1, 1);
+  // Último día de ese mes, por si el socio pagó el 29, 30 o 31
+  const ultimoDia = new Date(
+    destino.getFullYear(),
+    destino.getMonth() + 1,
+    0,
+  ).getDate();
+
+  return new Date(
+    destino.getFullYear(),
+    destino.getMonth(),
+    Math.min(dia, ultimoDia),
+  );
+}
