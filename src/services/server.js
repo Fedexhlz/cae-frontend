@@ -57,7 +57,7 @@ export const getNoticias = async () => {
 export const getSocios = async () => {
   const { data, error } = await supabase
     .from("perfiles")
-    .select("socio_id,nombre,documento,estado_cuotas,deportes")
+    .select("socio_id,nombre,documento,estado_cuotas,deportes,fecha_nacimiento,fecha_ultimo_pago")
     .order("nombre", { ascending: true });
 
   if (error) throw error;
@@ -67,7 +67,7 @@ export const getSocios = async () => {
 export const getPerfil = async (socioId) => {
   const { data, error } = await supabase
     .from("perfiles")
-    .select("socio_id,nombre,documento,estado_cuotas,deportes")
+    .select("socio_id,nombre,documento,estado_cuotas,deportes,fecha_nacimiento,fecha_ultimo_pago")
     .eq("socio_id", socioId)
     .maybeSingle();
 
