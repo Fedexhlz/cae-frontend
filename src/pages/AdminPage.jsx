@@ -6,6 +6,7 @@ import FeeStatus from "../components/ui/FeeStatus.jsx";
 import { ESTADOS_CUOTA } from "../constants/cuotas.js";
 import { Navigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore.js";
+import { estadoCuota } from "../utils/fees.js";
 
 const DEPORTES = {
   basquet: "Básquet",
@@ -51,7 +52,14 @@ function AdminPage() {
 
     getSocios()
       .then((data) => {
-        if (!cancelado) setSocios(data);
+        if (!cancelado) {
+          setSocios(
+            data.map((socio) => ({
+              ...socio,
+              estado_cuotas: estadoCuota(socio.fecha_ultimo_pago),
+            })),
+          );
+        }
       })
       .catch(() => {
         if (!cancelado) setError(true);
