@@ -7,6 +7,7 @@ import SportPage from "./pages/SportPage.jsx";
 import AreaDeSocios from "./pages/AreaDeSocios.jsx";
 import UnderConstructionPage from "./pages/UnderConstructionPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
+import AdminNewsPage from "./pages/AdminNewsPage.jsx";
 import PartnerPage from "./pages/PartnerPage.jsx";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
 
         {/* Área de administrador */}
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/noticias" element={<AdminNewsPage />} />
 
         {/* Rutas pendientes: todas muestran la página en construcción */}
         {underConstructionPaths.map((path) => (
