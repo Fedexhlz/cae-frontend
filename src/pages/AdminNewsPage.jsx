@@ -6,6 +6,7 @@ import {
   crearNoticia,
   actualizarNoticia,
   eliminarNoticia,
+  borrarImagen,
 } from "../services/server.js";
 import { useAuthStore } from "../stores/useAuthStore.js";
 import { formatearFecha } from "../utils/dates.js";
@@ -76,6 +77,17 @@ function AdminNewsPage() {
     setGuardandoId(noticiaEditando.id);
     try {
       await actualizarNoticia(noticiaEditando.id, cambios);
+      await actualizarNoticia(noticiaEditando.id, cambios);
+      // Si la foto cambió o se quitó, se borra el archivo anterior del bucket
+      if (noticiaEditando.image && noticiaEditando.image !== cambios.image) {
+        try {
+          await borrarImagen(noticiaEditando.image);
+        } catch {
+          // Si falla, queda un archivo huérfano pero la noticia ya se guardó
+        }
+      }
+      setNoticiaEditando(null);
+      setIntento((n) => n + 1);
       setNoticiaEditando(null);
       setIntento((n) => n + 1);
     } catch (error) {
@@ -104,6 +116,16 @@ function AdminNewsPage() {
     setGuardandoId(noticia.id);
     try {
       await eliminarNoticia(noticia.id);
+      await eliminarNoticia(noticia.id);
+      // Se borra también la foto de la noticia del bucket
+      if (noticia.image) {
+        try {
+          await borrarImagen(noticia.image);
+        } catch {
+          // Si falla, queda un archivo huérfano pero la noticia ya se eliminó
+        }
+      }
+      setIntento((n) => n + 1);
       setIntento((n) => n + 1);
     } catch (error) {
       Swal.fire({
