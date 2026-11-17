@@ -8,6 +8,7 @@ import AreaDeSocios from "./pages/AreaDeSocios.jsx";
 import UnderConstructionPage from "./pages/UnderConstructionPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import AdminNewsPage from "./pages/AdminNewsPage.jsx";
+import NewsDetailPage from "./pages/NewsDetailPage.jsx";
 import PartnerPage from "./pages/PartnerPage.jsx";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
 
         {/* Páginas de deportes */}
         <Route path="/deportes/:slug" element={<SportPage />} />
+        <Route path="/noticias/:id" element={<NewsDetailPage />} />
 
         {/* Área de socios */}
         <Route path="/ingresar" element={<AreaDeSocios />} />
