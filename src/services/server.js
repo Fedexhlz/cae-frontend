@@ -184,3 +184,31 @@ export const eliminarNoticia = async (id) => {
   if (data.length === 0) throw new Error("No se pudo eliminar la noticia");
 };
 
+const BUCKET_IMAGENES = "images";
+
+// Sube un archivo al bucket y devuelve su URL pública.
+// carpeta: "news", "coaches", etc.
+export const subirImagen = async (archivo, carpeta) => {
+  // Se conserva solo la extensión; el nombre es un identificador único
+  const extension = archivo.name.split(".").pop().toLowerCase();
+  const ruta = `${carpeta}/${crypto.randomUUID()}.${extension}`;
+
+  const { error } = await supabase.storage
+    .from(BUCKET_IMAGENES)
+    .upload(ruta, archivo, { contentType: archivo.type });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage.from(BUCKET_IMAGENES).getPublicUrl(ruta);
+  return data.publicUrl;
+};
+
+// Borra del bucket el archivo de una URL pública (ignora URLs que no son del bucket)
+export const borrarImagen = async (url) => {
+  const marca = `/storage/v1/object/public/${BUCKET_IMAGENES}/`;
+  if (!url || !url.includes(marca)) return;
+
+  const ruta = decodeURIComponent(url.split(marca)[1]);
+  const { error } = await supabase.storage.from(BUCKET_IMAGENES).remove([ruta]);
+  if (error) throw error;
+};
