@@ -88,3 +88,14 @@ export const registrarPago = async (socioId, fechaUltimoPago) => {
   if (data.length === 0) throw new Error("No se pudo registrar el pago");
   return data[0];
 };
+
+export const eliminarSocio = async (socioId) => {
+  const { data, error } = await supabase.functions.invoke("delete-member", {
+    body: { socioId },
+  });
+
+  if (error) throw error;
+  // La función puede devolver { error: "..." } con un estado distinto de 200
+  if (data?.error) throw new Error(data.error);
+  return data;
+};
