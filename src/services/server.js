@@ -47,6 +47,18 @@ export const getNoticias = async () => {
   return data;
 };
 
+export const getNoticia = async (id) => {
+  const { data, error } = await supabase
+    .from("noticias")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  // maybeSingle devuelve la fila, o null si la noticia no existe
+  return data;
+};
+
 export const getSocios = async () => {
   const { data, error } = await supabase
     .from("perfiles")
