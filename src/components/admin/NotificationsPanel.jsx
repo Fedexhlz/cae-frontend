@@ -6,7 +6,12 @@ const COLORES = {
   por_vencer: "border-l-emerald-400",
 };
 
-function NotificationsPanel({ notificaciones, onRegistrarPago, guardandoId }) {
+function NotificationsPanel({
+  notificaciones,
+  onRegistrarPago,
+  onEliminar,
+  guardandoId,
+}) {
   return (
     <aside aria-label="Notificaciones de cuotas" className="border border-line">
       <h2 className="border-b border-line bg-paper-soft px-5 py-4 text-[11px] font-bold tracking-[2px] uppercase">
@@ -17,7 +22,7 @@ function NotificationsPanel({ notificaciones, onRegistrarPago, guardandoId }) {
         <p className="px-5 py-8 text-sm text-muted">No hay avisos por ahora.</p>
       ) : (
         // max-h limita la altura y overflow-y-auto agrega el scroll vertical
-        <ul className="max-h-[32rem] overflow-y-auto">
+        <ul className="max-h-128 overflow-y-auto">
           {notificaciones.map((aviso) => (
             <li
               key={aviso.socioId}
@@ -30,6 +35,7 @@ function NotificationsPanel({ notificaciones, onRegistrarPago, guardandoId }) {
             >
               <p className="font-semibold">{aviso.nombre}</p>
               <p className="mt-1 text-sm text-muted">{aviso.mensaje}</p>
+
               {aviso.tipo !== "por_vencer" && (
                 <button
                   type="button"
@@ -40,6 +46,17 @@ function NotificationsPanel({ notificaciones, onRegistrarPago, guardandoId }) {
                   {guardandoId === aviso.socioId
                     ? "Guardando..."
                     : "Registrar pago"}
+                </button>
+              )}
+
+              {aviso.tipo === "inactivo" && (
+                <button
+                  type="button"
+                  onClick={() => onEliminar(aviso)}
+                  disabled={guardandoId === aviso.socioId}
+                  className="mt-3 ml-2 border border-red-500 px-3 py-1.5 text-[11px] font-bold text-red-600 uppercase transition-colors hover:bg-red-600 hover:text-white disabled:opacity-60"
+                >
+                  Eliminar
                 </button>
               )}
             </li>
