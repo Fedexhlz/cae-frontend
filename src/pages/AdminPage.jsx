@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import SectionHeading from "../components/ui/SectionHeading.jsx";
-import { getSocios, registrarPago } from "../services/server.js";
+import { getSocios, registrarPago, eliminarSocio } from "../services/server.js";
 import FeeStatus from "../components/ui/FeeStatus.jsx";
 import { ESTADOS_CUOTA } from "../constants/cuotas.js";
 import { Navigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import { edadActual, edadEnElAnio, categoriaPorEdad } from "../utils/age.js";
 import { sports } from "../constants/sports.js";
 import NotificationsPanel from "../components/admin/NotificationsPanel.jsx";
 import { armarNotificaciones } from "../utils/notifications.js";
+import Swal from "sweetalert2";
 
 const DEPORTES = {
   basquet: "Básquet",
@@ -141,6 +142,34 @@ function AdminPage() {
       setIntento((n) => n + 1);
     } catch {
       alert("No se pudo registrar el pago. Probá de nuevo.");
+    } finally {
+      setGuardandoId(null);
+    }
+  };
+
+  const eliminarSocioDe = async (aviso) => {
+    // Confirmación antes de borrar: la acción no se puede deshacer
+    const respuesta = await Swal.fire({
+      icon: "warning",
+      title: `¿Eliminar a ${aviso.nombre}?`,
+      text: "Se borran su cuenta y sus datos. Esta acción no se puede deshacer.",
+      showCancelButton: true,
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!respuesta.isConfirmed) return;
+
+    setGuardandoId(aviso.socioId);
+    try {
+      await eliminarSocio(aviso.socioId);
+      // Recarga la lista: el socio ya no aparece
+      setIntento((n) => n + 1);
+    } catch {
+      Swal.fire({
+        icon: "error",
+        title: "No se pudo eliminar",
+        text: "Probá de nuevo en unos minutos.",
+      });
     } finally {
       setGuardandoId(null);
     }
@@ -342,6 +371,7 @@ function AdminPage() {
           <NotificationsPanel
             notificaciones={notificaciones}
             onRegistrarPago={registrarPagoDe}
+            onEliminar={eliminarSocioDe}
             guardandoId={guardandoId}
           />
         </div>
