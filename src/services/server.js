@@ -94,9 +94,38 @@ export const eliminarSocio = async (socioId) => {
     body: { socioId },
   });
 
-  if (error) throw error;
-  // La función puede devolver { error: "..." } con un estado distinto de 200
-  if (data?.error) throw new Error(data.error);
+  if (error) {
+    // Si la función respondió con un error (400, 403, 404, 500), el mensaje viene en el cuerpo
+    let mensaje = error.message;
+    try {
+      const cuerpo = await error.context.json();
+      if (cuerpo?.error) mensaje = cuerpo.error;
+    } catch {
+      // Si no se puede leer el cuerpo, queda el mensaje genérico
+    }
+    throw new Error(mensaje);
+  }
+
+  return data;
+};
+
+export const crearSocio = async (datos) => {
+  const { data, error } = await supabase.functions.invoke("create-member", {
+    body: datos,
+  });
+
+  if (error) {
+    // Si la función respondió con un error (400, 409, 500), el mensaje viene en el cuerpo
+    let mensaje = error.message;
+    try {
+      const cuerpo = await error.context.json();
+      if (cuerpo?.error) mensaje = cuerpo.error;
+    } catch {
+      // Si no se puede leer el cuerpo, queda el mensaje genérico
+    }
+    throw new Error(mensaje);
+  }
+
   return data;
 };
 
@@ -115,3 +144,4 @@ export const actualizarPerfil = async (socioId, cambios) => {
   if (data.length === 0) throw new Error("No se pudo guardar el socio");
   return data[0];
 };
+
