@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import SectionHeading from "../components/ui/SectionHeading.jsx";
-import { getSocios } from "../services/server.js";
+import { getSocios, registrarPago } from "../services/server.js";
 import FeeStatus from "../components/ui/FeeStatus.jsx";
 import { ESTADOS_CUOTA } from "../constants/cuotas.js";
 import { Navigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore.js";
-import { estadoCuota } from "../utils/fees.js";
+import { estadoCuota, sumarUnMes } from "../utils/fees.js";
 import { edadActual, edadEnElAnio, categoriaPorEdad } from "../utils/age.js";
 import { sports } from "../constants/sports.js";
 import NotificationsPanel from "../components/admin/NotificationsPanel.jsx";
@@ -75,6 +75,8 @@ function AdminPage() {
   const [error, setError] = useState(false);
   // Cambiar este número vuelve a disparar la carga (botón "Reintentar")
   const [intento, setIntento] = useState(0);
+  // Id del socio cuyo pago se está guardando (null si ninguno)
+  const [guardandoId, setGuardandoId] = useState(null);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroCuota, setFiltroCuota] = useState("todas");
@@ -112,6 +114,36 @@ function AdminPage() {
     setLoading(true);
     setError(false);
     setIntento((n) => n + 1);
+  };
+
+  // Fecha de hoy como texto "AAAA-MM-DD", sin pasar por UTC
+  const fechaDeHoy = () => {
+    const hoy = new Date();
+    const mm = String(hoy.getMonth() + 1).padStart(2, "0");
+    const dd = String(hoy.getDate()).padStart(2, "0");
+    return `${hoy.getFullYear()}-${mm}-${dd}`;
+  };
+
+  const registrarPagoDe = async (aviso) => {
+    const socio = socios.find((item) => item.socio_id === aviso.socioId);
+    if (!socio) return;
+
+    // Inactivo o sin pagos: cuenta nueva (hoy). Si no, se suma un mes a la fecha anterior.
+    const reiniciar = aviso.tipo === "inactivo" || aviso.tipo === "sin_pagos";
+    const nuevaFecha = reiniciar
+      ? fechaDeHoy()
+      : sumarUnMes(socio.fecha_ultimo_pago);
+
+    setGuardandoId(aviso.socioId);
+    try {
+      await registrarPago(aviso.socioId, nuevaFecha);
+      // Cambiar este número vuelve a cargar la lista con los datos nuevos
+      setIntento((n) => n + 1);
+    } catch {
+      alert("No se pudo registrar el pago. Probá de nuevo.");
+    } finally {
+      setGuardandoId(null);
+    }
   };
 
   // Lista ya filtrada: se recalcula solo si cambian los datos o algún filtro
@@ -307,7 +339,11 @@ function AdminPage() {
             )}
           </div>
 
-          <NotificationsPanel notificaciones={notificaciones} />
+          <NotificationsPanel
+            notificaciones={notificaciones}
+            onRegistrarPago={registrarPagoDe}
+            guardandoId={guardandoId}
+          />
         </div>
       </div>
     </section>
