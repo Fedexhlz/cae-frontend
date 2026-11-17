@@ -121,39 +121,57 @@ function NewsForm({ valoresIniciales, onGuardar, onCancelar, guardando }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="imagen" className={labelClassName}>
-          Foto (JPG, PNG o WebP, máximo 5 MB)
-        </label>
+        <span className={labelClassName}>Foto</span>
 
-        {/* Vista previa: la foto nueva si hay, o la que ya estaba guardada */}
-        {(archivo || imagen) && (
-          <img
-            src={archivo ? URL.createObjectURL(archivo) : imagen}
-            alt="Vista previa de la foto"
-            className="max-h-48 w-full border border-line object-cover"
-          />
-        )}
-
+        {/* El input real queda oculto: el label de abajo hace de botón */}
         <input
           id="imagen"
           type="file"
           accept="image/jpeg,image/png,image/webp"
           onChange={(event) => setArchivo(event.target.files[0] ?? null)}
-          className="text-sm"
+          className="sr-only"
         />
 
-        {(archivo || imagen) && (
-          <button
-            type="button"
-            onClick={() => {
-              setArchivo(null);
-              setImagen("");
-            }}
-            className="self-start text-xs font-bold text-red-600 uppercase underline"
+        {archivo || imagen ? (
+          <>
+            <img
+              src={archivo ? URL.createObjectURL(archivo) : imagen}
+              alt="Vista previa de la foto"
+              className="max-h-48 w-full border border-line object-cover"
+            />
+            <div className="flex gap-3">
+              <label
+                htmlFor="imagen"
+                className="cursor-pointer border border-ink px-4 py-2 text-[11px] font-bold uppercase transition-colors hover:bg-ink hover:text-white"
+              >
+                Cambiar foto
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setArchivo(null);
+                  setImagen("");
+                }}
+                className="border border-red-500 px-4 py-2 text-[11px] font-bold text-red-600 uppercase transition-colors hover:bg-red-600 hover:text-white"
+              >
+                Quitar foto
+              </button>
+            </div>
+          </>
+        ) : (
+          <label
+            htmlFor="imagen"
+            className="flex cursor-pointer flex-col items-center gap-1 border border-dashed border-ink px-4 py-8 text-center transition-colors hover:bg-paper-soft"
           >
-            Quitar foto
-          </button>
+            <span className="text-sm font-bold uppercase">Elegir foto</span>
+            <span className="text-xs text-muted">
+              JPG, PNG o WebP, máximo 5 MB
+            </span>
+          </label>
         )}
+
+        {/* Nombre del archivo elegido, para confirmar que se cargó */}
+        {archivo && <p className="text-xs text-muted">{archivo.name}</p>}
       </div>
 
       <div className="flex flex-col gap-2">
