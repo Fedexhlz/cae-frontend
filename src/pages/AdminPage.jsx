@@ -10,7 +10,7 @@ import {
 } from "../services/server.js";
 import FeeStatus from "../components/ui/FeeStatus.jsx";
 import { ESTADOS_CUOTA } from "../constants/cuotas.js";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore.js";
 import { estadoCuota, sumarUnMes } from "../utils/fees.js";
 import { edadActual, edadEnElAnio, categoriaPorEdad } from "../utils/age.js";
@@ -270,13 +270,21 @@ function AdminPage() {
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading label="ADMINISTRACIÓN" lines={["SOCIOS"]} />
-          <button
-            type="button"
-            onClick={cerrarSesion}
-            className="border border-ink px-5 py-3 text-xs font-bold uppercase transition-colors hover:bg-ink hover:text-white"
-          >
-            Cerrar sesión
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/admin/noticias"
+              className="bg-ink px-5 py-3 text-xs font-bold text-white uppercase hover:bg-ink-light"
+            >
+              Administrar noticias
+            </Link>
+            <button
+              type="button"
+              onClick={cerrarSesion}
+              className="border border-ink px-5 py-3 text-xs font-bold uppercase transition-colors hover:bg-ink hover:text-white"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </div>
 
         {/* Herramientas de lectura: buscador y filtros */}

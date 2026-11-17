@@ -1,17 +1,7 @@
-import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-
-// Cliente preconfigurado: todas las peticiones llevan la dirección base y la clave
-const api = axios.create({
-  baseURL: `${SUPABASE_URL}/rest/v1`,
-  headers: {
-    apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${SUPABASE_KEY}`,
-  },
-});
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -48,9 +38,24 @@ export const loginSocio = async (email, password) => {
 };
 
 export const getNoticias = async () => {
-  const { data } = await api.get("/noticias", {
-    params: { select: "*", order: "date.desc" },
-  });
+  const { data, error } = await supabase
+    .from("noticias")
+    .select("*")
+    .order("date", { ascending: false });
+
+  if (error) throw error;
+  return data;
+};
+
+export const getNoticia = async (id) => {
+  const { data, error } = await supabase
+    .from("noticias")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  // maybeSingle devuelve la fila, o null si la noticia no existe
   return data;
 };
 
@@ -145,3 +150,65 @@ export const actualizarPerfil = async (socioId, cambios) => {
   return data[0];
 };
 
+export const crearNoticia = async (noticia) => {
+  const { data, error } = await supabase
+    .from("noticias")
+    .insert(noticia)
+    .select("*");
+
+  if (error) throw error;
+  if (data.length === 0) throw new Error("No se pudo crear la noticia");
+  return data[0];
+};
+
+export const actualizarNoticia = async (id, cambios) => {
+  const { data, error } = await supabase
+    .from("noticias")
+    .update(cambios)
+    .eq("id", id)
+    .select("*");
+
+  if (error) throw error;
+  if (data.length === 0) throw new Error("No se pudo guardar la noticia");
+  return data[0];
+};
+
+export const eliminarNoticia = async (id) => {
+  const { data, error } = await supabase
+    .from("noticias")
+    .delete()
+    .eq("id", id)
+    .select("id");
+
+  if (error) throw error;
+  if (data.length === 0) throw new Error("No se pudo eliminar la noticia");
+};
+
+const BUCKET_IMAGENES = "images";
+
+// Sube un archivo al bucket y devuelve su URL pública.
+// carpeta: "news", "coaches", etc.
+export const subirImagen = async (archivo, carpeta) => {
+  // Se conserva solo la extensión; el nombre es un identificador único
+  const extension = archivo.name.split(".").pop().toLowerCase();
+  const ruta = `${carpeta}/${crypto.randomUUID()}.${extension}`;
+
+  const { error } = await supabase.storage
+    .from(BUCKET_IMAGENES)
+    .upload(ruta, archivo, { contentType: archivo.type });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage.from(BUCKET_IMAGENES).getPublicUrl(ruta);
+  return data.publicUrl;
+};
+
+// Borra del bucket el archivo de una URL pública (ignora URLs que no son del bucket)
+export const borrarImagen = async (url) => {
+  const marca = `/storage/v1/object/public/${BUCKET_IMAGENES}/`;
+  if (!url || !url.includes(marca)) return;
+
+  const ruta = decodeURIComponent(url.split(marca)[1]);
+  const { error } = await supabase.storage.from(BUCKET_IMAGENES).remove([ruta]);
+  if (error) throw error;
+};
