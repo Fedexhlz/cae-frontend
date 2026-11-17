@@ -1,17 +1,7 @@
-import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-
-// Cliente preconfigurado: todas las peticiones llevan la dirección base y la clave
-const api = axios.create({
-  baseURL: `${SUPABASE_URL}/rest/v1`,
-  headers: {
-    apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${SUPABASE_KEY}`,
-  },
-});
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -48,9 +38,12 @@ export const loginSocio = async (email, password) => {
 };
 
 export const getNoticias = async () => {
-  const { data } = await api.get("/noticias", {
-    params: { select: "*", order: "date.desc" },
-  });
+  const { data, error } = await supabase
+    .from("noticias")
+    .select("*")
+    .order("date", { ascending: false });
+
+  if (error) throw error;
   return data;
 };
 
@@ -143,5 +136,39 @@ export const actualizarPerfil = async (socioId, cambios) => {
   }
   if (data.length === 0) throw new Error("No se pudo guardar el socio");
   return data[0];
+};
+
+export const crearNoticia = async (noticia) => {
+  const { data, error } = await supabase
+    .from("noticias")
+    .insert(noticia)
+    .select("*");
+
+  if (error) throw error;
+  if (data.length === 0) throw new Error("No se pudo crear la noticia");
+  return data[0];
+};
+
+export const actualizarNoticia = async (id, cambios) => {
+  const { data, error } = await supabase
+    .from("noticias")
+    .update(cambios)
+    .eq("id", id)
+    .select("*");
+
+  if (error) throw error;
+  if (data.length === 0) throw new Error("No se pudo guardar la noticia");
+  return data[0];
+};
+
+export const eliminarNoticia = async (id) => {
+  const { data, error } = await supabase
+    .from("noticias")
+    .delete()
+    .eq("id", id)
+    .select("id");
+
+  if (error) throw error;
+  if (data.length === 0) throw new Error("No se pudo eliminar la noticia");
 };
 
