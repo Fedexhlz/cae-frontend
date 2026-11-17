@@ -6,6 +6,7 @@ import {
   registrarPago,
   eliminarSocio,
   actualizarPerfil,
+  crearSocio,
 } from "../services/server.js";
 import FeeStatus from "../components/ui/FeeStatus.jsx";
 import { ESTADOS_CUOTA } from "../constants/cuotas.js";
@@ -86,6 +87,8 @@ function AdminPage() {
   const [guardandoId, setGuardandoId] = useState(null);
   // Socio que se está editando (null si el formulario está cerrado)
   const [socioEditando, setSocioEditando] = useState(null);
+  // true mientras el formulario de alta está abierto
+  const [creandoSocio, setCreandoSocio] = useState(false);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroCuota, setFiltroCuota] = useState("todas");
@@ -149,7 +152,11 @@ function AdminPage() {
       // Cambiar este número vuelve a cargar la lista con los datos nuevos
       setIntento((n) => n + 1);
     } catch {
-      alert("No se pudo registrar el pago. Probá de nuevo.");
+      Swal.fire({
+        icon: "error",
+        title: "No se pudo registrar el pago",
+        text: "Probá de nuevo en unos minutos.",
+      });
     } finally {
       setGuardandoId(null);
     }
@@ -194,6 +201,38 @@ function AdminPage() {
       Swal.fire({
         icon: "error",
         title: "No se pudo guardar",
+        text: error.message,
+      });
+    } finally {
+      setGuardandoId(null);
+    }
+  };
+
+  const guardarNuevoSocio = async (datos) => {
+    setGuardandoId("nuevo");
+    try {
+      // El formulario usa snake_case; la función espera camelCase
+      await crearSocio({
+        email: datos.email,
+        nombre: datos.nombre,
+        documento: datos.documento,
+        fechaNacimiento: datos.fecha_nacimiento,
+        fechaUltimoPago: datos.fecha_ultimo_pago,
+        deportes: datos.deportes,
+      });
+      setCreandoSocio(false);
+      // Recarga la lista: el socio nuevo ya aparece
+      setIntento((n) => n + 1);
+      Swal.fire({
+        icon: "success",
+        title: "Socio creado",
+        text: "Su contraseña inicial es su documento.",
+      });
+    } catch (error) {
+      // El modal queda abierto para no perder lo que se escribió
+      Swal.fire({
+        icon: "error",
+        title: "No se pudo crear el socio",
         text: error.message,
       });
     } finally {
@@ -284,6 +323,13 @@ function AdminPage() {
               </option>
             ))}
           </select>
+          <button
+            type="button"
+            onClick={() => setCreandoSocio(true)}
+            className="bg-ink px-5 py-2.5 text-xs font-bold whitespace-nowrap text-white uppercase hover:bg-ink-light"
+          >
+            Nuevo socio
+          </button>
         </div>
 
         {/* Contador de resultados */}
@@ -429,6 +475,28 @@ function AdminPage() {
               onGuardar={guardarEdicion}
               onCancelar={() => setSocioEditando(null)}
               guardando={guardandoId === socioEditando.socio_id}
+            />
+          </div>
+        </div>
+      )}
+
+      {creandoSocio && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Nuevo socio"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+        >
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto bg-white p-8">
+            <h2 className="mb-6 font-display text-3xl font-bold">
+              NUEVO SOCIO
+            </h2>
+            <MemberForm
+              modo="alta"
+              valoresIniciales={{}}
+              onGuardar={guardarNuevoSocio}
+              onCancelar={() => setCreandoSocio(false)}
+              guardando={guardandoId === "nuevo"}
             />
           </div>
         </div>
