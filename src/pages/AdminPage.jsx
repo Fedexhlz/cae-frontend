@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import SectionHeading from "../components/ui/SectionHeading.jsx";
-import { getSocios, registrarPago, eliminarSocio } from "../services/server.js";
+import {
+  getSocios,
+  registrarPago,
+  eliminarSocio,
+  actualizarPerfil,
+} from "../services/server.js";
 import FeeStatus from "../components/ui/FeeStatus.jsx";
 import { ESTADOS_CUOTA } from "../constants/cuotas.js";
 import { Navigate } from "react-router-dom";
@@ -10,6 +15,7 @@ import { estadoCuota, sumarUnMes } from "../utils/fees.js";
 import { edadActual, edadEnElAnio, categoriaPorEdad } from "../utils/age.js";
 import { sports } from "../constants/sports.js";
 import NotificationsPanel from "../components/admin/NotificationsPanel.jsx";
+import MemberForm from "../components/admin/MemberForm.jsx";
 import { armarNotificaciones } from "../utils/notifications.js";
 import Swal from "sweetalert2";
 
@@ -78,6 +84,8 @@ function AdminPage() {
   const [intento, setIntento] = useState(0);
   // Id del socio cuyo pago se está guardando (null si ninguno)
   const [guardandoId, setGuardandoId] = useState(null);
+  // Socio que se está editando (null si el formulario está cerrado)
+  const [socioEditando, setSocioEditando] = useState(null);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroCuota, setFiltroCuota] = useState("todas");
@@ -169,6 +177,24 @@ function AdminPage() {
         icon: "error",
         title: "No se pudo eliminar",
         text: "Probá de nuevo en unos minutos.",
+      });
+    } finally {
+      setGuardandoId(null);
+    }
+  };
+
+  const guardarEdicion = async (cambios) => {
+    setGuardandoId(socioEditando.socio_id);
+    try {
+      await actualizarPerfil(socioEditando.socio_id, cambios);
+      setSocioEditando(null);
+      // Recarga la lista con los datos nuevos
+      setIntento((n) => n + 1);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "No se pudo guardar",
+        text: error.message,
       });
     } finally {
       setGuardandoId(null);
@@ -308,9 +334,10 @@ function AdminPage() {
                       "Cuotas",
                       "Deportes",
                       "Edad y categoría",
-                    ].map((col) => (
+                      "",
+                    ].map((col, indice) => (
                       <th
-                        key={col}
+                        key={indice}
                         scope="col"
                         className="px-6 py-4 text-[11px] font-bold tracking-[2px] uppercase"
                       >
@@ -361,6 +388,15 @@ function AdminPage() {
                           </>
                         )}
                       </td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setSocioEditando(socio)}
+                          className="border border-ink px-3 py-1.5 text-[11px] font-bold uppercase transition-colors hover:bg-ink hover:text-white"
+                        >
+                          Editar
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -376,6 +412,27 @@ function AdminPage() {
           />
         </div>
       </div>
+
+      {socioEditando && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Editar socio"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+        >
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto bg-white p-8">
+            <h2 className="mb-6 font-display text-3xl font-bold">
+              EDITAR SOCIO
+            </h2>
+            <MemberForm
+              valoresIniciales={socioEditando}
+              onGuardar={guardarEdicion}
+              onCancelar={() => setSocioEditando(null)}
+              guardando={guardandoId === socioEditando.socio_id}
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
