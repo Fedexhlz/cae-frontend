@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { subirImagen } from "../../services/server.js";
 
 const CATEGORIAS = ["Básquet", "Cestoball", "Club"];
 
@@ -17,18 +18,39 @@ function NewsForm({ valoresIniciales, onGuardar, onCancelar, guardando }) {
   const [titulo, setTitulo] = useState(valoresIniciales.title ?? "");
   const [resumen, setResumen] = useState(valoresIniciales.excerpt ?? "");
   const [contenido, setContenido] = useState(valoresIniciales.content ?? "");
+  // URL de la foto guardada (vacía si no tiene)
   const [imagen, setImagen] = useState(valoresIniciales.image ?? "");
+  // Archivo elegido que todavía no se subió
+  const [archivo, setArchivo] = useState(null);
+  // Estado para bloquear el botón mientras se sube la foto
+  const [subiendo, setSubiendo] = useState(false);
   const [fecha, setFecha] = useState(valoresIniciales.date ?? fechaDeHoy());
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     // Evita que el formulario recargue la página
     event.preventDefault();
+
+    let urlImagen = imagen.trim() || null;
+
+    // Si el admin eligió una foto nueva, se sube y se usa su URL pública
+    if (archivo) {
+      setSubiendo(true);
+      try {
+        urlImagen = await subirImagen(archivo, "news");
+      } catch {
+        setSubiendo(false);
+        alert("No se pudo subir la foto. Probá de nuevo.");
+        return;
+      }
+      setSubiendo(false);
+    }
+
     onGuardar({
       category: categoria,
       title: titulo.trim(),
       excerpt: resumen.trim(),
       content: contenido.trim() || null,
-      image: imagen.trim() || null,
+      image: urlImagen,
       date: fecha,
     });
   };
@@ -100,16 +122,38 @@ function NewsForm({ valoresIniciales, onGuardar, onCancelar, guardando }) {
 
       <div className="flex flex-col gap-2">
         <label htmlFor="imagen" className={labelClassName}>
-          Imagen (ruta o URL, opcional)
+          Foto (JPG, PNG o WebP, máximo 5 MB)
         </label>
+
+        {/* Vista previa: la foto nueva si hay, o la que ya estaba guardada */}
+        {(archivo || imagen) && (
+          <img
+            src={archivo ? URL.createObjectURL(archivo) : imagen}
+            alt="Vista previa de la foto"
+            className="max-h-48 w-full border border-line object-cover"
+          />
+        )}
+
         <input
           id="imagen"
-          type="text"
-          value={imagen}
-          onChange={(event) => setImagen(event.target.value)}
-          placeholder="/images/news/news-1.jpg"
-          className={inputClassName}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={(event) => setArchivo(event.target.files[0] ?? null)}
+          className="text-sm"
         />
+
+        {(archivo || imagen) && (
+          <button
+            type="button"
+            onClick={() => {
+              setArchivo(null);
+              setImagen("");
+            }}
+            className="self-start text-xs font-bold text-red-600 uppercase underline"
+          >
+            Quitar foto
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -129,10 +173,14 @@ function NewsForm({ valoresIniciales, onGuardar, onCancelar, guardando }) {
       <div className="flex gap-3">
         <button
           type="submit"
-          disabled={guardando}
+          disabled={guardando || subiendo}
           className="bg-ink px-6 py-3 text-sm font-bold text-white uppercase hover:bg-ink-light disabled:opacity-60"
         >
-          {guardando ? "Guardando..." : "Guardar"}
+          {subiendo
+            ? "Subiendo foto..."
+            : guardando
+              ? "Guardando..."
+              : "Guardar"}
         </button>
         <button
           type="button"
