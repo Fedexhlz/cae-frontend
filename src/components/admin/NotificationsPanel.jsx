@@ -30,16 +30,18 @@ function NotificationsPanel({ notificaciones, onRegistrarPago, guardandoId }) {
             >
               <p className="font-semibold">{aviso.nombre}</p>
               <p className="mt-1 text-sm text-muted">{aviso.mensaje}</p>
-              <button
-                type="button"
-                onClick={() => onRegistrarPago(aviso)}
-                disabled={guardandoId === aviso.socioId}
-                className="mt-3 border border-ink px-3 py-1.5 text-[11px] font-bold uppercase transition-colors hover:bg-ink hover:text-white disabled:opacity-60"
-              >
-                {guardandoId === aviso.socioId
-                  ? "Guardando..."
-                  : "Registrar pago"}
-              </button>
+              {aviso.tipo !== "por_vencer" && (
+                <button
+                  type="button"
+                  onClick={() => onRegistrarPago(aviso)}
+                  disabled={guardandoId === aviso.socioId}
+                  className="mt-3 border border-ink px-3 py-1.5 text-[11px] font-bold uppercase transition-colors hover:bg-ink hover:text-white disabled:opacity-60"
+                >
+                  {guardandoId === aviso.socioId
+                    ? "Guardando..."
+                    : "Registrar pago"}
+                </button>
+              )}
             </li>
           ))}
         </ul>
