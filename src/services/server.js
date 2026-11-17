@@ -99,3 +99,19 @@ export const eliminarSocio = async (socioId) => {
   if (data?.error) throw new Error(data.error);
   return data;
 };
+
+export const actualizarPerfil = async (socioId, cambios) => {
+  const { data, error } = await supabase
+    .from("perfiles")
+    .update(cambios)
+    .eq("socio_id", socioId)
+    .select("socio_id,nombre,documento,deportes,fecha_nacimiento");
+
+  if (error) {
+    // 23505: el documento ya pertenece a otro socio (columna unique)
+    if (error.code === "23505") throw new Error("Ese documento ya está cargado");
+    throw error;
+  }
+  if (data.length === 0) throw new Error("No se pudo guardar el socio");
+  return data[0];
+};
