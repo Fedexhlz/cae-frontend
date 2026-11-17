@@ -15,4 +15,10 @@ export const ESTADOS_CUOTA = {
     mensaje:
       "Tenés una cuota vencida. Comunicate con el club para regularizar tu situación.",
   },
+    inactivo: {
+    label: "Inactivo",
+    className: "bg-slate-100 text-slate-700 ring-slate-300",
+    mensaje:
+      "Tu cuenta figura como inactiva por falta de pago. Comunicate con el club para reactivarla.",
+  },
 };

@@ -57,7 +57,7 @@ export const getNoticias = async () => {
 export const getSocios = async () => {
   const { data, error } = await supabase
     .from("perfiles")
-    .select("socio_id,nombre,documento,estado_cuotas,deportes")
+    .select("socio_id,nombre,documento,estado_cuotas,deportes,fecha_nacimiento,fecha_ultimo_pago")
     .order("nombre", { ascending: true });
 
   if (error) throw error;
@@ -67,7 +67,7 @@ export const getSocios = async () => {
 export const getPerfil = async (socioId) => {
   const { data, error } = await supabase
     .from("perfiles")
-    .select("socio_id,nombre,documento,estado_cuotas,deportes")
+    .select("socio_id,nombre,documento,estado_cuotas,deportes,fecha_nacimiento,fecha_ultimo_pago")
     .eq("socio_id", socioId)
     .maybeSingle();
 
@@ -75,3 +75,73 @@ export const getPerfil = async (socioId) => {
   // maybeSingle devuelve la fila, o null si el socio no tiene perfil
   return data;
 };
+
+export const registrarPago = async (socioId, fechaUltimoPago) => {
+  const { data, error } = await supabase
+    .from("perfiles")
+    .update({ fecha_ultimo_pago: fechaUltimoPago })
+    .eq("socio_id", socioId)
+    .select("socio_id,fecha_ultimo_pago");
+
+  if (error) throw error;
+  // Si la política no deja escribir, Supabase no da error: devuelve 0 filas
+  if (data.length === 0) throw new Error("No se pudo registrar el pago");
+  return data[0];
+};
+
+export const eliminarSocio = async (socioId) => {
+  const { data, error } = await supabase.functions.invoke("delete-member", {
+    body: { socioId },
+  });
+
+  if (error) {
+    // Si la función respondió con un error (400, 403, 404, 500), el mensaje viene en el cuerpo
+    let mensaje = error.message;
+    try {
+      const cuerpo = await error.context.json();
+      if (cuerpo?.error) mensaje = cuerpo.error;
+    } catch {
+      // Si no se puede leer el cuerpo, queda el mensaje genérico
+    }
+    throw new Error(mensaje);
+  }
+
+  return data;
+};
+
+export const crearSocio = async (datos) => {
+  const { data, error } = await supabase.functions.invoke("create-member", {
+    body: datos,
+  });
+
+  if (error) {
+    // Si la función respondió con un error (400, 409, 500), el mensaje viene en el cuerpo
+    let mensaje = error.message;
+    try {
+      const cuerpo = await error.context.json();
+      if (cuerpo?.error) mensaje = cuerpo.error;
+    } catch {
+      // Si no se puede leer el cuerpo, queda el mensaje genérico
+    }
+    throw new Error(mensaje);
+  }
+
+  return data;
+};
+
+export const actualizarPerfil = async (socioId, cambios) => {
+  const { data, error } = await supabase
+    .from("perfiles")
+    .update(cambios)
+    .eq("socio_id", socioId)
+    .select("socio_id,nombre,documento,deportes,fecha_nacimiento");
+
+  if (error) {
+    // 23505: el documento ya pertenece a otro socio (columna unique)
+    if (error.code === "23505") throw new Error("Ese documento ya está cargado");
+    throw error;
+  }
+  if (data.length === 0) throw new Error("No se pudo guardar el socio");
+  return data[0];
+};
+
